@@ -2,6 +2,9 @@ var Writedown = (function () {
 
 var sd = new wShowdown.converter();
 
+sd.config.figures = true;
+sd.config.tables = true;
+
 var blockRules = {
   start: [ { // normal header
     regex: "^#.+$",
@@ -178,7 +181,7 @@ var Writedown = function (doc) {
     var max = Math.max(newdoc.length, this.doc.length);
     var delta = newdoc.length - this.doc.length;
     var blockindex = 0;
-    var i;
+    var i = 0;
     if (this.blocks.length >= 2) {
       var nextBlock = this.blocks[blockindex+1].startline;
       for (i = 0; i < max; i++) {
@@ -199,7 +202,8 @@ var Writedown = function (doc) {
       var params = {
         line: this.blocks[blockindex].startline,
         blockIndex: blockindex,
-        delta: delta
+        delta: delta,
+        diffline: i
       };
     } else {
       var params = false;
@@ -379,6 +383,8 @@ var Writedown = function (doc) {
                 if (token.value === this.blocks[k].value && this.blocks[k].startline+partial.delta === token.startline) {
                   matching = true;
                   break;
+                } else if (this.blocks[k].startline+partial.delta > token.startline) {
+                  break;
                 }
               }
               if (matching) {
@@ -390,13 +396,18 @@ var Writedown = function (doc) {
                     break;
                   }
                 }
-                for (var i = partial.blockIndex; i < this.blocks.length; i++) {
+                for (var i = partial.blockIndex; i < k; i++) {
                   if (this.blocks[i].type === "metadata") {
                     this.dirtyrefs = true;
                     break;
                   }
                 }
-                Array.prototype.splice.apply(this.blocks, args);
+                for (var i = k; i < this.blocks.length; i++) {
+                  if (this.blocks[i].startline >= partial.diffline) {
+                    this.blocks[i].startline += partial.delta;
+                  }
+                }
+                Splicey(this.blocks, args);
                 return;
               }
             }
@@ -424,8 +435,10 @@ var Writedown = function (doc) {
       token.value += "\n";
     }
   
-    if (token.type)
-        tokens.push(token);
+    if (token.type && token.value) {
+      token.value = token.value.replace(/^\n+/g,"").replace(/\n+$/g,""); // trim surrounding newlines
+      tokens.push(token);
+    }
     
     if (!partial)
       this.blocks = tokens;
@@ -444,8 +457,12 @@ var Writedown = function (doc) {
           break;
         }
       }
-      Array.prototype.splice.apply(this.blocks, args);
+      Splicey(this.blocks, args);
     }
+  }
+  
+  function Splicey (arr, args) {
+    Array.prototype.splice.apply(arr, args);
   }
 
 }).call(Writedown.prototype);

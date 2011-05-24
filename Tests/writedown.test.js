@@ -1,29 +1,54 @@
 var writedown = new Writedown();
 var showdown = new Showdown.converter();
 
+showdown.config.figures = true;
+showdown.config.tables = true;
+
 function markdownTest(name, md) {
   asyncTest(name, function () {
     var firstload = false;
     var html = "";
     var text = "";
+    var rawtext = "";
     $.get(name + '.text', function (data) {
+      rawtext = data;
       text = $.trim(md.makeHtml(data)).replace(/>\s*\n*\s*</g, "><");
       if (!firstload) {
         firstload = true;
       } else {
         equals(text, html, name);
+        var testcase1 = rawtext + "\n\n# New Header";
+        var testcase2 = "# New Header\n\n" + rawtext;
+        var baseresult = writedown.makeHtml(rawtext);
+        var testresult1 = writedown.makeHtml(testcase1);
+        var testresult2 = writedown.makeHtml(testcase2);
+        
         JSLitmus.test(name + " showdown", function () {
-          showdown.makeHtml(text);
+          testresult1 = showdown.makeHtml(rawtext + "\n\n# New Header");
         });
         
-        JSLitmus.test(name + " writedown", function () {
-          writedown.makeHtml(text);
+        JSLitmus.test(name + " writedown full", function () {
+          testresult1 = writedown.makeHtml(rawtext + "\n\n# New Header");
         });
-        JSLitmus.test(name + " writedown partial", function () {
-          writedown.updateDoc(text + "\n\n# New Header");
-          writedown.makeHtml();
-          writedown.updateDoc(text);
-          writedown.makeHtml();
+        JSLitmus.test(name + " writedown append+revert", function () {
+          writedown.updateDoc(testcase1);
+          if (writedown.makeHtml() !== testresult1) {
+            throw "WOAH";
+          }
+          writedown.updateDoc(rawtext);
+          if (writedown.makeHtml() !== baseresult) {
+            throw "OOAH";
+          }
+        });
+        JSLitmus.test(name + " writedown prepend+revert", function () {
+          writedown.updateDoc(testcase2);
+          if (writedown.makeHtml() !== testresult2) {
+            throw "WOAH";
+          }
+          writedown.updateDoc(rawtext);
+          if (writedown.makeHtml() !== baseresult) {
+            throw "OOAH";
+          }
         });
         start();
       }
@@ -34,18 +59,38 @@ function markdownTest(name, md) {
         firstload = true;
       } else {
         equals(text, html, name);
+        var testcase1 = rawtext + "\n\n# New Header";
+        var testcase2 = "# New Header\n\n" + rawtext;
+        var baseresult = writedown.makeHtml(rawtext);
+        var testresult1 = writedown.makeHtml(testcase1);
+        var testresult2 = writedown.makeHtml(testcase2);
+        
         JSLitmus.test(name + " showdown", function () {
-          showdown.makeHtml(text);
+          testresult1 = showdown.makeHtml(rawtext + "\n\n# New Header");
         });
         
-        JSLitmus.test(name + " writedown", function () {
-          writedown.makeHtml(text);
+        JSLitmus.test(name + " writedown full", function () {
+          testresult1 = writedown.makeHtml(rawtext + "\n\n# New Header");
         });
-        JSLitmus.test(name + " writedown partial", function () {
-          writedown.updateDoc(text + "\n\n# New Header");
-          writedown.makeHtml();
-          writedown.updateDoc(text);
-          writedown.makeHtml();
+        JSLitmus.test(name + " writedown append+revert", function () {
+          writedown.updateDoc(testcase1);
+          if (writedown.makeHtml() !== testresult1) {
+            throw "WOAH";
+          }
+          writedown.updateDoc(rawtext);
+          if (writedown.makeHtml() !== baseresult) {
+            throw "OOAH";
+          }
+        });
+        JSLitmus.test(name + " writedown prepend+revert", function () {
+          writedown.updateDoc(testcase2);
+          if (writedown.makeHtml() !== testresult2) {
+            throw "WOAH";
+          }
+          writedown.updateDoc(rawtext);
+          if (writedown.makeHtml() !== baseresult) {
+            throw "OOAH";
+          }
         });
         start();
       }
