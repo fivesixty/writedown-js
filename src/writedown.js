@@ -389,7 +389,6 @@ var Writedown = function (doc) {
                 }
               }
               if (matching) {
-                var args = [partial.blockIndex, k].concat(tokens);
                 // console.log("Splicing in new blocks from " + args[0] + " to " + args[1]);
                 for (var i = 0; i < tokens.length; i++) {
                   if (tokens[i].type === "metadata") {
@@ -408,7 +407,9 @@ var Writedown = function (doc) {
                     this.blocks[i].startline += partial.delta;
                   }
                 }
-                Array.prototype.splice.apply(this.blocks, args);
+                // var args = [partial.blockIndex, k].concat(tokens);
+                this.spliceBlocks(partial.blockIndex, k, tokens);
+                // Array.prototype.splice.apply(this.blocks, args);
                 return;
               }
             }
@@ -448,7 +449,6 @@ var Writedown = function (doc) {
     if (!partial)
       this.blocks = tokens;
     else {
-      var args = [partial.blockIndex, this.blocks.length].concat(tokens);
       // console.log("Splicing in new blocks from " + args[0] + " to " + args[1]);
       for (var i = 0; i < tokens.length; i++) {
         if (tokens[i].type === "metadata") {
@@ -462,8 +462,25 @@ var Writedown = function (doc) {
           break;
         }
       }
-      Array.prototype.splice.apply(this.blocks, args);
+      var args = [partial.blockIndex, this.blocks.length].concat(tokens);
+      this.spliceBlocks(partial.blockIndex, this.blocks.length, tokens);
+      //Array.prototype.splice.apply(this.blocks, args);
     }
+  }
+  
+  this.spliceBlocks = function(from, n, blocks) {
+    var i, j;
+    for (i = from, j = 0; i < n; i++, j++) {
+      if (!blocks[j]) {
+        break;
+      }
+      if (this.blocks[i].value !== blocks[j].value) {
+        break;
+      }
+    }
+    blocks = blocks.slice(j);
+    var args = [from+j, n].concat(blocks);
+    Array.prototype.splice.apply(this.blocks, args);
   }
   
 }).call(Writedown.prototype);

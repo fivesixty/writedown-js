@@ -12,8 +12,8 @@ Compatible with showdown, with extensions from the [mdext](https://github.com/fi
 
 Rendering the Markdown Syntax page:
 
-![Markdown Syntax render benchmark](http://i.imgur.com/ks6PR.png)
+![Markdown Syntax render benchmark](http://i.imgur.com/yNrcJ.png)
 
 Across all test cases (as a multiple of showdown performance):
 
-![Relative Performance Benchmarks](http://i.imgur.com/McKIF.png)
+![Relative Performance Benchmarks](http://i.imgur.com/F6DPd.png)
