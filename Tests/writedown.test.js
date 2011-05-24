@@ -151,7 +151,7 @@ function testTransition(a, b) {
 
 test ("cases", function () {
   
-  var letters = "ab ", gen = [""], space = 3, i, j, k, arr;
+  var letters = "a ", gen = [""], space = 5, i, j, k, arr;
   
   // Build strings
   for (i = 0; i < space; i++) {

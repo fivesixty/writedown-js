@@ -198,7 +198,7 @@ var Writedown = function (doc) {
       }
     }
     this.doc = newdoc;
-    if (i > 0 && this.blocks.length > 0 && delta < 0) {
+    if (this.blocks.length > 0) {
       var params = {
         line: this.blocks[blockindex].startline,
         blockIndex: blockindex,
@@ -376,8 +376,9 @@ var Writedown = function (doc) {
             token.value = token.value.replace(/^\n+/g,"").replace(/\n+$/g,""); // trim surrounding newlines
           }
           if (token.value) {
-            if (partial && i >= partial.startline) {
+            if (partial && i >= partial.diffline) {
               var k = partial.blockIndex, l;
+              
               for (; k < this.blocks.length; k++) {
                 var matching = false;
                 if (token.value === this.blocks[k].value && this.blocks[k].startline+partial.delta === token.startline) {
@@ -411,9 +412,13 @@ var Writedown = function (doc) {
                 return;
               }
             }
-          
-            if (token.type)
-              tokens.push(token);
+            
+            if (partial && this.blocks[partial.blockIndex] && this.blocks[partial.blockIndex].value === token.value && tokens.length == 0) {
+              partial.blockIndex++;
+            } else {
+              if (token.type)
+                tokens.push(token);
+            }
           }
           token = {
             type: type,
