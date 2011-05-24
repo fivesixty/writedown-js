@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+  <script src="showdown.js"></script>
+  <script src="w-showdown.js"></script>
+  <script src="writedown.js"></script>
+  <script>
+    $(document).ready(function () {
+      var wd = new Writedown("");
+      wd.makeHtml();
+      window.wd = wd;
+      
+      $("textarea").change(function () {
+        wd.updateDoc($(this).val())
+        console.log(wd.makeHtml());
+      });
+    });
+  </script>
+</head>
+<body>
+  <textarea></textarea>
+</body>
+</html>

@@ -1,0 +1,18 @@
+!<[world image](http://world)
+
+!<[world image](http://world "world caption")
+
+!<[world image][world]
+
+!<[world image][worldcap]
+
+!>[world image](http://world)
+
+!>[world image](http://world "world caption")
+
+!>[world image][world]
+
+!>[world image][worldcap]
+
+  [world]: http://world
+  [worldcap]: http://world "world caption"

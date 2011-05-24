@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js">
+    </script>
+  <script src="https://github.com/jquery/qunit/raw/master/qunit/qunit.js">
+    </script>
+  <link rel="stylesheet"
+    href="https://github.com/jquery/qunit/raw/master/qunit/qunit.css" />
+  <script src="../src/showdown.js"></script>
+  <script src="../src/w-showdown.js"></script>
+  <script src="../src/writedown.js"></script>
+  <script src="http://www.broofa.com/Tools/JSLitmus/JSLitmus.js"></script>
+  <script src="./writedown.test.js"></script>
+  <script>
+    $(document).ready(function () {
+      $("li.fail").live("click", function () {
+        $(this).toggleClass("show");
+      });
+      var done = QUnit.done;
+      QUnit.done = function () {
+        done();
+        $("li.fail ol").css("display", "none");
+        JSLitmus._setup();
+      };
+    });
+  </script>
+</head>
+<body>
+  <h1 id="qunit-header">QUnit example</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>
