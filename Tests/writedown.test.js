@@ -121,3 +121,63 @@ var ext_tests = ["Figures", "Tables"];
 $.each(ext_tests, function (i, name) {
   markdownTest(name, writedown);
 });
+
+module("partial update test suite");
+
+function testTransition(a, b) {
+  var sa = "", sb = "", i, len, da, db, ta = "", tb = "";
+  for (i = 0, len = a.length; i < len; i++) {
+    sa += a[i] + "\n\n";
+    if (a[i] !== " ") {
+      ta += "<p>" + a[i] + "</p>\n";
+    }
+  }
+  for (i = 0, len = b.length; i < len; i++) {
+    sb = sb + b[i] + "\n\n";
+    if (b[i] !== " ") {
+      tb += "<p>" + b[i] + "</p>\n";
+    }
+  }
+  ta = ta.replace(/^\n+/g,"").replace(/\n+$/g,""); // trim surrounding newlines
+  tb = tb.replace(/^\n+/g,"").replace(/\n+$/g,""); // trim surrounding newlines
+  var wd = new Writedown("");
+  wd.updateDoc(sa);
+  equal(wd.makeHtml(), ta, "" + a + "[" + sa + "][" + sb + "]");
+  wd.updateDoc(sb);
+  equal(wd.makeHtml(), tb , "" + a + "->" + b + "[" + sa + "][" + sb + "]");
+  wd.updateDoc(sa);
+  equal(wd.makeHtml(), ta , "" + b + "->" + a + "[" + sa + "][" + sb + "]");
+}
+
+test ("cases", function () {
+  
+  var letters = "ab ", gen = [""], space = 3, i, j, k, arr;
+  
+  // Build strings
+  for (i = 0; i < space; i++) {
+    for (j = 0, len = gen.length; j < len; j++) {
+      for (k = 0; k < letters.length; k++) {
+        gen.push(gen[j]+letters[k]);
+      }
+    }
+  }
+
+  // strip duplicates
+  arr = {};
+  for ( i=0; i < gen.length; i++ )
+      arr[gen[i]] = gen[i];
+  gen = [];
+  for ( key in arr )
+    gen.push(arr[key]);
+
+  // generate tuples
+  var tuples = [];
+  for (i = 0, len = gen.length; i < len; i++)
+    for (j = 0, len = gen.length; j < len; j++)
+      tuples.push([gen[i], gen[j]]);
+  
+  // test the tuple transitions
+  for ( i in tuples ) {
+    testTransition(tuples[i][0], tuples[i][1]);
+  }
+});

@@ -165,7 +165,7 @@ var Writedown = function (doc) {
   }
   
   this.prepareDoc = function (doc) {
-    return doc.replace(wsreplace,wsproc).split("\n");
+    return doc.replace(wsreplace,wsproc).replace(/^\n+|\n+$/g,"").split("\n");
   }
   
   this.makeHtml = function (doc) {
@@ -198,7 +198,7 @@ var Writedown = function (doc) {
       }
     }
     this.doc = newdoc;
-    if (this.blocks.length > 0) {
+    if (i > 0 && this.blocks.length > 0 && delta < 0) {
       var params = {
         line: this.blocks[blockindex].startline,
         blockIndex: blockindex,
@@ -376,7 +376,7 @@ var Writedown = function (doc) {
             token.value = token.value.replace(/^\n+/g,"").replace(/\n+$/g,""); // trim surrounding newlines
           }
           if (token.value) {
-            if (partial) {
+            if (partial && i >= partial.startline) {
               var k = partial.blockIndex, l;
               for (; k < this.blocks.length; k++) {
                 var matching = false;
@@ -407,7 +407,7 @@ var Writedown = function (doc) {
                     this.blocks[i].startline += partial.delta;
                   }
                 }
-                Splicey(this.blocks, args);
+                Array.prototype.splice.apply(this.blocks, args);
                 return;
               }
             }
@@ -457,14 +457,10 @@ var Writedown = function (doc) {
           break;
         }
       }
-      Splicey(this.blocks, args);
+      Array.prototype.splice.apply(this.blocks, args);
     }
   }
   
-  function Splicey (arr, args) {
-    Array.prototype.splice.apply(arr, args);
-  }
-
 }).call(Writedown.prototype);
 
 
